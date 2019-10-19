@@ -1,0 +1,11 @@
+#lang sicp
+
+(define (-- n) (- n 1))
+
+(define (cont-frac n d k)
+  (define (iter i acc)
+    (if (= i 0)
+        acc
+        (iter (-- i) (/ (n i) (+ (d i) acc)))))
+  (iter k 0))
+

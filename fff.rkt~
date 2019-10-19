@@ -1,0 +1,18 @@
+#lang sicp
+
+(define dx 0.000001)
+
+(define (derive g)
+  (lambda (x)
+    (/ (- (g (+ x dx)) (g x))
+       dx)))
+
+(define (cube n) (* n n n))
+
+(define (newtons-method g guess)
+  (define (newton-transform g)
+    (lambda (x)
+      (- x (/ (g x) 
+              ((derive g) x)))))
+  (fixed-point (newton-transform g) 
+               guess))

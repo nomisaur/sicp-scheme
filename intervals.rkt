@@ -1,0 +1,146 @@
+#lang sicp
+
+;    : = make
+;    . = get
+
+; let :interval = make interval
+; let low-bound = get lower bound
+; let upp-bound = get upper bound
+
+(define (xor a b)
+  (and (or a b)
+       (not (and a b))))
+
+(define (interval a b) (cons a b))
+
+(define (low-bound i) (car i))
+(define (upp-bound i) (cdr i))
+
+(define (add_i x y)
+  (interval (+ (low-bound x) 
+               (low-bound y))
+            (+ (upp-bound x) 
+               (upp-bound y))))
+
+(define (negative_i x)
+  (interval (- (upp-bound x))
+            (- (low-bound x))))
+
+(define (sub_i x y)
+  (add_i x (negative_i y)))
+
+(define (reciprocal_i x)
+  (interval (/ 1.0 (upp-bound x)) 
+            (/ 1.0 (low-bound x))))
+
+(define (neg? n)
+  (< n 0))
+
+(define (pos? n)
+  (not (neg? n)))
+
+;(define (*_i x y)
+;  (let ((p1 (* (low-bound x) 
+;               (low-bound y)))
+;        (p2 (* (low-bound x) 
+;               (upp-bound y)))
+;        (p3 (* (upp-bound x) 
+;               (low-bound y)))
+;        (p4 (* (upp-bound x) 
+;               (upp-bound y))))
+;    (interval (min p1 p2 p3 p4)
+;              (max p1 p2 p3 p4))))
+
+(define (mul_i x y)
+  (let ((lbx (low-bound x))
+        (ubx (upp-bound x))
+        (lby (low-bound y))
+        (uby (upp-bound y)))
+    (if (pos? lbx)
+        (if (pos? lby)
+            (interval (* lbx lby) (* ubx uby))
+            (if (pos? uby)
+                (interval (* ubx lby) (* ubx uby))
+                (interval (* ubx lby) (* lbx uby))))
+        (if (pos? ubx)
+            (if (pos? lby)
+                (interval (* lbx uby) (* ubx uby))
+                (if (pos? uby)
+                    (interval (min (* lbx uby)
+                                   (* ubx lby))
+                              (max (* lbx lby)
+                                   (* ubx uby)))
+                    (interval (* ubx lby) (* lbx lby))))
+            (if (pos? lby)
+                (interval (* lbx uby) (* ubx lby))
+                (if (pos? uby)
+                    (interval (* lbx uby) (* lbx lby))
+                    (interval (* lbx lby) (* ubx uby))))))))
+
+(define (pos_i? x)
+  (pos? (low-bound x)))
+
+(define (neg_i? x)
+  (neg? (upp-bound x)))
+
+;(define (mul_i x y)
+;  (let ((pos-x? (pos_i? x))
+;        (pos-y? (pos_i? y))
+;        (neg-x? (neg_i? x))
+;        (neg-y? (neg_i? y)))
+;    (cond ((or (and pos-x? pos-y?)
+;               (and neg-x? neg-y?))
+;           (interval
+                   
+
+(define (spans-zero? x)
+  (if (pos? (low-bound x))
+      #f
+      (pos? (upp-bound x))))
+         
+
+(define (div_i x y)
+  (if (spans-zero? y)
+      (error "no divide by zero you fool")
+      (mul_i x (reciprocal_i y))))
+
+(define (mcw c w)
+  (interval (- c w) (+ c w)))
+
+(define (center i)
+  (/ (+ (low-bound i) 
+        (upp-bound i)) 
+     2))
+
+(define (width i)
+  (/ (- (upp-bound i) 
+        (low-bound i)) 
+     2))
+
+(define (% n) (/ n 100))
+
+(define (mcp c p)
+  (mcw c (* c (% p))))
+
+(define (percent i)
+  (* 100 (/ (width i) (center i))))
+
+(define pos (interval 6 8))
+(define neg (interval -5 -3))
+(define mid (interval -1 1))
+
+(define (par1 r1 r2)
+  (div_i 
+   (mul_i r1 r2)
+   (add_i r1 r2)))
+
+(define (par2 r1 r2)
+  (let ((one (interval 1 1)))
+    (div_i 
+     one
+     (add_i 
+      (div_i one r1) 
+      (div_i one r2)))))
+
+(par1 pos pos)
+(par2 pos pos)

@@ -1,0 +1,41 @@
+#lang sicp
+
+(define (++ n) (inc n))
+(define (-- n) (- n 1))
+
+(define (iter infant food end? next feed)
+  (define (continue food monkey)
+    (if (end? food)
+      monkey
+      (continue (next food) (feed food monkey))))
+  (continue food infant))
+
+(define (foldl op initial sequence)
+  (iter initial
+        sequence
+        null?
+        cdr
+        (lambda (rest result) (op result (car rest)))))
+
+
+(foldl * 1 (list 1 2 3))
+(foldl cons nil (list 1 2 3))
+
+(define (num-list start end)
+  (iter nil
+        end
+        (lambda (i) (< i start))
+        --
+        cons))
+
+;(define (num-list start end)
+;  (define (iter feed grow)
+;    (if (< feed start)
+;        grow
+;        (iter (-- feed) (cons feed grow))))
+;  (iter end nil))
+
+(num-list 8 28)
+
+;(define (unique-pairs n)
+  

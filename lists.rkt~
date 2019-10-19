@@ -1,0 +1,13 @@
+#lang sicp
+
+(define (last list)
+  (define (iter prev next)
+    (if (null? next)
+        (car prev)
+        (iter next (cdr next))))
+  (if (null? list)
+      nil
+      (iter list (cdr list))))
+
+(last (list 23 72 149 34))
+
